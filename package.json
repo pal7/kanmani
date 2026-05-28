@@ -1,0 +1,20 @@
+{
+  "name": "kanmani",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Kanmani (கண்மணி) — Bilingual Tamil-English AI Chat Assistant",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter client --filter server dev",
+    "build": "pnpm --filter client build && pnpm --filter server build",
+    "test": "pnpm --recursive test",
+    "lint": "pnpm --recursive lint",
+    "typecheck": "pnpm --recursive typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

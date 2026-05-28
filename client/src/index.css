@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #FAF6F0;
+  --color-ink: #1A1A1A;
+  --color-accent: #C24A2D;
+  --color-accent-soft: #E8D4C4;
+  --color-muted: #6B6357;
+  --font-display: 'Fraunces', serif;
+  --font-body-latin: 'DM Sans', sans-serif;
+  --font-body-tamil: 'Noto Sans Tamil', 'DM Sans', sans-serif;
+  --radius: 12px;
+  --shadow-soft: 0 2px 8px rgba(26, 26, 26, 0.06);
+}
+
+@font-face {
+  font-family: 'Noto Sans Tamil';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/noto-tamil-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans Tamil';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/noto-tamil-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans Tamil';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/noto-tamil-700.woff2') format('woff2');
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body-latin);
+  -webkit-font-smoothing: antialiased;
+}
