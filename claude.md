@@ -12,7 +12,7 @@
 |---|---|
 | Name | Kanmani(கண்மணி) |
 | Tagline | கண்மணி · Bilingual AI |
-| Logo glyph | ம |
+| Logo glyph | ஃ |
 | Audience | Tamil speakers — India, Toronto diaspora, global |
 | Primary UX language | English (default) |
 | Secondary UX language | Tamil (toggle) |
@@ -140,7 +140,7 @@ mozhiyar/
 │       │   ├── SuggestionChips.tsx
 │       │   ├── TypingIndicator.tsx
 │       │   ├── Sidebar.tsx
-│       │   └── BrandMark.tsx       # the ம glyph
+│       │   └── BrandMark.tsx       # the ஃ glyph
 │       ├── hooks/
 │       │   ├── useChat.ts
 │       │   ├── useAuth.ts
@@ -348,7 +348,7 @@ All require auth. RLS enforces ownership.
 | `--shadow-soft` | `0 2px 8px rgba(26,26,26,0.06)` |
 
 - Visual motif: subtle Kolam (கோலம்) pattern on empty-state and auth backgrounds — sparingly.
-- The `ம` glyph is the brand mark.
+- The `ஃ` glyph is the brand mark.
 - Dark mode in Phase 2.
 
 Full token sheet and component specs in `docs/DESIGN.md`.
