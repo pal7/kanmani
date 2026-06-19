@@ -29,13 +29,34 @@ jobs:
         working-directory: server
         run: npm run build
 
-      - name: Prune to production dependencies
-        working-directory: server
-        run: npm prune --production
+      # Stage minimal deployment: dist/ + package.json + production node_modules.
+      # No src/, no tsconfig, no devDependencies.
+      - name: Stage and zip deployment artifacts
+        run: |
+          mkdir -p _deploy
+          cp server/package.json _deploy/
+          cp -r server/dist _deploy/
+          cd _deploy && npm install --production --ignore-scripts && zip -r ../kanmani-api.zip .
 
-      - name: Deploy to Azure App Service
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: kanmani-api
-          publish-profile: ${{ secrets.AZURE_API_PUBLISH_PROFILE }}
-          package: ./server
+      # Use Kudu's zipdeploy API directly — more reliable than webapps-deploy@v3
+      # on VS subscriptions. SCM_DO_BUILD_DURING_DEPLOYMENT=false is set on the
+      # App Service so Oryx does not re-run on the pre-built package.
+      # Credentials via env: so bash does not expand the $ in $appname username.
+      - name: Deploy to Azure App Service via Kudu zipdeploy
+        env:
+          KUDU_USER: ${{ secrets.KUDU_USER }}
+          KUDU_PASS: ${{ secrets.KUDU_PASS }}
+        run: |
+          curl -f -s -X POST \
+            "https://kanmani-api.scm.azurewebsites.net/api/zipdeploy?isAsync=false" \
+            -u "${KUDU_USER}:${KUDU_PASS}" \
+            -H "Content-Type: application/zip" \
+            --data-binary @kanmani-api.zip \
+            -w "\nHTTP %{http_code}\n"
+
+      - name: Verify deployment
+        run: |
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://kanmani-api.azurewebsites.net/health)
+          echo "Health check status: $STATUS"
+          [ "$STATUS" = "200" ] && echo "Deployment successful" || (echo "Health check failed" && exit 1)
