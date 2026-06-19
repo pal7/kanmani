@@ -36,8 +36,7 @@ jobs:
           mkdir -p _deploy
           cp server/package.json _deploy/
           cp -r server/dist _deploy/
-          cd _deploy && npm install --production --ignore-scripts
-          cd _deploy && zip -r ../kanmani-api.zip .
+          cd _deploy && npm install --production --ignore-scripts && zip -r ../kanmani-api.zip .
 
       # Use Kudu's zipdeploy API directly — more reliable than webapps-deploy@v3
       # on VS subscriptions. SCM_DO_BUILD_DURING_DEPLOYMENT=false is set on the
