@@ -29,13 +29,19 @@ jobs:
         working-directory: server
         run: npm run build
 
-      - name: Prune to production dependencies
-        working-directory: server
-        run: npm prune --production
+      # Stage a minimal deployment package — only compiled output and production
+      # dependencies. Avoids deploying src/, tsconfig, devDependencies, etc.
+      - name: Stage deployment artifacts
+        run: |
+          mkdir -p _deploy
+          cp server/package.json _deploy/
+          cp server/package-lock.json _deploy/
+          cp -r server/dist _deploy/
+          cd _deploy && npm install --production --ignore-scripts
 
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: kanmani-api
           publish-profile: ${{ secrets.AZURE_API_PUBLISH_PROFILE }}
-          package: ./server
+          package: ./_deploy
