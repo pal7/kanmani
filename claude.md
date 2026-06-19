@@ -516,8 +516,8 @@ Each ADR lives as a standalone file under `docs/adr/` and follows the same shape
 | Item | Notes |
 |---|---|
 | Google SSO | Set up Google OAuth app → get Client ID + Secret → add to Supabase Auth > Providers > Google → add `https://dlabrsetyxxfkznfppkf.supabase.co/auth/v1/callback` to Google authorized redirect URIs |
-| Prod deploy (web) | Push `deploy-web.yml`; add 4 GitHub secrets: `AZURE_STATIC_WEB_APPS_API_TOKEN`, `VITE_API_BASE_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` |
-| CORS for prod | Add `CLIENT_ORIGIN` env var to App Service pointing to the Static Web Apps domain |
+| Prod deploy (web) | ✅ Done — `deploy-web.yml` live, all 4 GitHub secrets set |
+| CORS for prod | **Next task** — Add `CLIENT_ORIGIN` env var to App Service (Static Web Apps domain), update `server/src/index.ts` CORS config to read it. Currently only `http://localhost:5173` is allowed; prod client requests will be blocked. |
 | PWA device test | Install on Android, verify offline shell and Workbox font caching |
 
 ---
