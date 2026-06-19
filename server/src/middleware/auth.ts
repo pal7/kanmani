@@ -1,6 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { jwtVerify, type JWTPayload } from 'jose';
-import { env } from '../env.js';
+import { adminSupabase } from '../db/supabase.js';
 
 // Augment the global Express namespace so req.user is typed everywhere.
 // @types/express-serve-static-core merges Express.Request into the Request
@@ -20,16 +19,10 @@ export interface AuthUser {
   email?: string;
 }
 
-// Supabase JWT payload shape. `sub` is the user UUID; `role` must be
-// 'authenticated' to distinguish logged-in users from anon keys.
-interface SupabaseJwtPayload extends JWTPayload {
-  sub: string;
-  email?: string;
-  role?: string;
-}
-
-const JWT_SECRET = new TextEncoder().encode(env.SUPABASE_JWT_SECRET);
-
+// Use Supabase's own auth.getUser() for token verification.
+// This handles both legacy HS256 tokens and newer asymmetric-signed tokens
+// (Supabase migrated newer projects to ES256) without any key management on
+// our side. It also validates expiry and revocation.
 export async function authMiddleware(
   req: Request,
   res: Response,
@@ -44,22 +37,16 @@ export async function authMiddleware(
 
   const token = header.slice(7);
 
-  try {
-    const { payload } = await jwtVerify<SupabaseJwtPayload>(token, JWT_SECRET, {
-      algorithms: ['HS256'],
-    });
+  const { data, error } = await adminSupabase.auth.getUser(token);
 
-    // Reject service-role keys and anon tokens — only real user sessions allowed.
-    if (payload.role !== 'authenticated') {
-      res.status(401).json({ error: 'Invalid token role', code: 'AUTH_ROLE' });
-      return;
-    }
-
-    req.user = { id: payload.sub, ...(payload.email !== undefined && { email: payload.email }) };
-    next();
-  } catch {
-    // jwtVerify throws on expired, malformed, or bad-signature tokens.
-    // We don't surface the internal error to avoid leaking validation details.
+  if (error || !data.user) {
     res.status(401).json({ error: 'Invalid or expired token', code: 'AUTH_INVALID' });
+    return;
   }
+
+  req.user = {
+    id: data.user.id,
+    ...(data.user.email !== undefined && { email: data.user.email }),
+  };
+  next();
 }
