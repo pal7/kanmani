@@ -17,6 +17,7 @@ export function getClient(): OpenAIClient {
     _client = new OpenAIClient(
       env.AZURE_FOUNDRY_ENDPOINT,
       new AzureKeyCredential(env.AZURE_FOUNDRY_API_KEY),
+      { apiVersion: env.AZURE_FOUNDRY_API_VERSION },
     );
   }
   return _client;
