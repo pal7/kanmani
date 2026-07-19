@@ -18,7 +18,7 @@ const app = express();
 // production, lock this via a CLIENT_ORIGIN env var added at deploy time.
 app.use(
   cors({
-    origin: env.NODE_ENV === 'production' ? false : 'http://localhost:5173',
+    origin: env.NODE_ENV === 'production' ? (env.CLIENT_ORIGIN ?? false) : 'http://localhost:5173',
     credentials: true,
     methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
