@@ -41,11 +41,15 @@ jobs:
       # Use Kudu's zipdeploy API directly — more reliable than webapps-deploy@v3
       # on VS subscriptions. SCM_DO_BUILD_DURING_DEPLOYMENT=false is set on the
       # App Service so Oryx does not re-run on the pre-built package.
+      # Credentials via env: so bash does not expand the $ in $appname username.
       - name: Deploy to Azure App Service via Kudu zipdeploy
+        env:
+          KUDU_USER: ${{ secrets.KUDU_USER }}
+          KUDU_PASS: ${{ secrets.KUDU_PASS }}
         run: |
           curl -f -s -X POST \
             "https://kanmani-api.scm.azurewebsites.net/api/zipdeploy?isAsync=false" \
-            -u "${{ secrets.KUDU_USER }}:${{ secrets.KUDU_PASS }}" \
+            -u "${KUDU_USER}:${KUDU_PASS}" \
             -H "Content-Type: application/zip" \
             --data-binary @kanmani-api.zip \
             -w "\nHTTP %{http_code}\n"

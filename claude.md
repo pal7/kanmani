@@ -401,13 +401,13 @@ VITE_SUPABASE_ANON_KEY=...
 
 Ship when end-to-end:
 
-1. Sign up / sign in (email + Google) via Supabase.
-2. Send English message → streamed GPT-4o-mini reply.
-3. Toggle to Tamil → send Tamil message → streamed GPT-4o reply in Tamil script.
-4. Sidebar lists prior chats; click reopens with full history.
-5. Delete a chat.
-6. PWA installable on Android; app shell works offline.
-7. Deployed: Static Web Apps + App Service. Smoke test passes against prod.
+1. ✅ Sign up / sign in (email) via Supabase. — Google SSO deferred to TODO (see §16).
+2. ✅ Send English message → streamed GPT-4o-mini reply. — working locally as of 2026-06-18.
+3. ✅ Toggle to Tamil → send Tamil message → streamed GPT-4o reply in Tamil script.
+4. ✅ Sidebar lists prior chats; click reopens with full history.
+5. ✅ Delete a chat.
+6. ⬜ PWA installable on Android; app shell works offline. — Workbox config in place; not yet tested on device.
+7. ⬜ Deployed: Static Web Apps + App Service. Smoke test passes against prod. — GitHub Actions CI/CD wired; full prod deploy pending.
 
 **Out of MVP:** file uploads, image input, voice, sharing, custom prompts, model picker UI, dark mode.
 
@@ -502,5 +502,47 @@ Each ADR lives as a standalone file under `docs/adr/` and follows the same shape
 9. **Streaming is non-negotiable.** Don't replace SSE with a non-streaming fetch as a "simplification". This is a portfolio-defining feature.
 10. **Write the ADR before the code** when making an architectural choice. The reasoning is the artifact.
 
+### ADR-0007 — Supabase auth.getUser() over manual jwtVerify
+**Status:** Accepted.
+**Context:** New Supabase projects (2024+) sign user session tokens with ES256 (asymmetric) instead of HS256. The original `jwtVerify` call used the legacy HS256 secret and rejected every real user token.
+**Decision:** Replace `jwtVerify` with `adminSupabase.auth.getUser(token)` in `server/src/middleware/auth.ts`. `SUPABASE_JWT_SECRET` is now optional in env.ts.
+**Consequences:** No key management on the server side; Supabase handles algorithm changes transparently. One extra network round-trip per request to Supabase Auth (negligible — same request would have been made for DB operations).
+**Alternatives:** Fetch JWKS from `<project>.supabase.co/auth/v1/.well-known/jwks.json` and verify locally (more code, same result).
+
 ---
-*Document version: 1.1.0 — adds ADRs, title generator, telemetry hooks, and learning/portfolio framing.*
+
+## 16. TODO / Deferred
+
+| Item | Notes |
+|---|---|
+| Google SSO | Set up Google OAuth app → get Client ID + Secret → add to Supabase Auth > Providers > Google → add `https://dlabrsetyxxfkznfppkf.supabase.co/auth/v1/callback` to Google authorized redirect URIs |
+| Prod deploy (web) | ✅ Done — `deploy-web.yml` live, all 4 GitHub secrets set |
+| CORS for prod | **Next task** — Add `CLIENT_ORIGIN` env var to App Service (Static Web Apps domain), update `server/src/index.ts` CORS config to read it. Currently only `http://localhost:5173` is allowed; prod client requests will be blocked. |
+| PWA device test | Install on Android, verify offline shell and Workbox font caching |
+
+---
+
+## 17. Dev Environment — Local Setup
+
+**Dev user:** `ashwnramani@gmail.com` / `test123` (Supabase email auth, local dev only)
+
+**Start server:**
+```bash
+cd server && pnpm dev
+# runs on http://localhost:8787
+```
+
+**Start client:**
+```bash
+pnpm --filter @kanmani/client dev
+# runs on http://localhost:5173
+```
+
+**Known local quirks:**
+- Node 26 + tsx: use `node --env-file=.env --import tsx --watch src/index.ts` (not `tsx --env-file`).
+- Pino transport (thread-stream) crashes on Node 26 — pipe to pino-pretty via shell in dev script instead.
+- `postcss.config.js` must exist in `client/` for Tailwind JIT to work with Vite.
+- `supabase/migrations/0003_grants.sql` must be applied before the DB will accept inserts (grants table privileges to `authenticated` and `service_role`; Supabase dashboard SQL editor is the easiest path).
+
+---
+*Document version: 1.2.0 — Phase 1 status, ADR-0007, TODO list, dev environment notes.*
