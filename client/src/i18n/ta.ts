@@ -21,4 +21,7 @@ export const ta: Record<TranslationKey, string> = {
   kuralLine1: 'அகர முதல எழுத்தெல்லாம் ஆதி',
   kuralLine2: 'பகவன் முதற்றே உலகு',
   kuralCredit: 'திருக்குறள் · முதற்குறள்',
+  sangamLine1: 'யாதும் ஊரே',
+  sangamLine2: 'யாவரும் கேளிர்',
+  sangamCredit: 'கணியன் பூங்குன்றனார் · புறநானூறு 192',
 };

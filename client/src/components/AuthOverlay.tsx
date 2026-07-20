@@ -15,10 +15,22 @@ export default function AuthOverlay() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [greeting, setGreeting] = useState(0);
+  const [verse, setVerse] = useState(0);
   const t = useT();
 
   useEffect(() => {
     const id = setInterval(() => setGreeting((g) => (g + 1) % GREETINGS.length), 2800);
+    return () => clearInterval(id);
+  }, []);
+
+  // Ancient voices: Thirukkural alternating with the Sangam-era Purananuru verse.
+  const currentVerse =
+    verse === 0
+      ? { line1: t.kuralLine1, line2: t.kuralLine2, credit: t.kuralCredit }
+      : { line1: t.sangamLine1, line2: t.sangamLine2, credit: t.sangamCredit };
+
+  useEffect(() => {
+    const id = setInterval(() => setVerse((v) => (v + 1) % 2), 8000);
     return () => clearInterval(id);
   }, []);
 
@@ -98,13 +110,13 @@ export default function AuthOverlay() {
           </p>
         </div>
 
-        <div className="text-center mt-8 text-muted">
+        <div key={verse} className="animate-fade-up text-center mt-8 text-muted min-h-[5.5rem]">
           <p className="font-tamil text-sm leading-relaxed">
-            {t.kuralLine1}
+            {currentVerse.line1}
             <br />
-            {t.kuralLine2}
+            {currentVerse.line2}
           </p>
-          <p className="text-xs mt-2 italic opacity-80">{t.kuralCredit}</p>
+          <p className="text-xs mt-2 italic opacity-80">{currentVerse.credit}</p>
         </div>
       </div>
     </div>
