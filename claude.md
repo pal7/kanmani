@@ -524,7 +524,7 @@ Each ADR lives as a standalone file under `docs/adr/` and follows the same shape
 
 ## 17. Dev Environment — Local Setup
 
-**Dev user:** `ashwnramani@gmail.com` / `test123` (Supabase email auth, local dev only)
+**Dev user:** `ashwnramani@gmail.com` (Supabase email auth, local dev only — password kept out of the repo; retrieve/reset via Supabase dashboard → Authentication → Users)
 
 **Start server:**
 ```bash
