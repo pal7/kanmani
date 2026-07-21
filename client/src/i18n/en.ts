@@ -16,6 +16,12 @@ export const en = {
   checkEmail: 'Check your email to confirm your account.',
   welcome: "Hi! I'm Kanmani, your bilingual Tamil-English assistant.",
   or: 'or',
+  kuralLine1: 'அகர முதல எழுத்தெல்லாம் ஆதி',
+  kuralLine2: 'பகவன் முதற்றே உலகு',
+  kuralCredit: 'Thirukkural · Verse One — “As A leads all letters, so the Primal One leads the world.”',
+  sangamLine1: 'யாதும் ஊரே',
+  sangamLine2: 'யாவரும் கேளிர்',
+  sangamCredit: 'Kaniyan Pungundranar · Purananuru 192 — “Every town our home, all people our kin.”',
 } as const;
 
 export type TranslationKey = keyof typeof en;
