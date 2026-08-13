@@ -22,7 +22,7 @@ export default function ChatWindow({ onSuggestion }: Props) {
   const isEmpty = messages.length === 0 && !streaming;
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-6">
+    <div className="chat-wallpaper flex-1 overflow-y-auto px-4 py-6">
       {isEmpty ? (
         <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
           <BrandMark className="text-6xl" />

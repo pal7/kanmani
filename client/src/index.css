@@ -86,6 +86,12 @@ body {
   animation: glyph-glow 5s ease-in-out infinite;
 }
 
+/* Heritage doodle wallpaper behind chat messages (WhatsApp-style tile) */
+.chat-wallpaper {
+  background-image: url('/chat-wallpaper.svg');
+  background-size: 280px;
+}
+
 /* Chettinad temple-border trim (repeating triangles) */
 .temple-border {
   height: 8px;
