@@ -32,7 +32,7 @@ export function useChat() {
     await streamChat(
       { chatId: store.activeChatId, message: text, language },
       {
-        onMeta: ({ chatId }) => store.setActiveChat(chatId),
+        onMeta: ({ chatId }) => store.bindActiveChat(chatId),
         onDelta: (chunk) => store.appendStreamChunk(chunk),
         onDone: () => {
           const content = useChatStore.getState().streamingContent;

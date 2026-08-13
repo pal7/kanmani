@@ -25,6 +25,7 @@ interface ChatStore {
   streamingContent: string;
   setChats: (chats: Chat[]) => void;
   setActiveChat: (id: string | null) => void;
+  bindActiveChat: (id: string) => void;
   setMessages: (messages: Message[]) => void;
   appendStreamChunk: (chunk: string) => void;
   finalizeStream: (msg: Message) => void;
@@ -41,6 +42,9 @@ export const useChatStore = create<ChatStore>()((set) => ({
   streamingContent: '',
   setChats: (chats) => set({ chats }),
   setActiveChat: (id) => set({ activeChatId: id, messages: [], streamingContent: '' }),
+  // Binds the chat id mid-stream (e.g. when the server creates the chat on
+  // first send) without clearing the messages already on screen.
+  bindActiveChat: (id) => set({ activeChatId: id }),
   setMessages: (messages) => set({ messages }),
   appendStreamChunk: (chunk) => set((s) => ({ streamingContent: s.streamingContent + chunk })),
   finalizeStream: (msg) => set((s) => ({
