@@ -16,14 +16,15 @@ jobs:
           SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
+          # REST root (OpenAPI doc) needs no table grants for anon, and the
+          # request still counts as Data API activity.
           code=$(curl -s -o /tmp/body -w "%{http_code}" \
-            "$SUPABASE_URL/rest/v1/chats?select=id&limit=1" \
+            "$SUPABASE_URL/rest/v1/" \
             -H "apikey: $SUPABASE_ANON_KEY" \
             -H "Authorization: Bearer $SUPABASE_ANON_KEY")
           echo "HTTP $code"
-          # 200 = alive (RLS returns an empty array for anon; that's fine —
-          # the request itself counts as activity). Anything else means the
-          # project is paused or broken: fail the run so it's visible.
+          # Anything but 200 means the project is paused or broken:
+          # fail the run so it's visible.
           if [ "$code" != "200" ]; then
             cat /tmp/body
             exit 1
