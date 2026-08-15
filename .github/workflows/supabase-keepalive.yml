@@ -16,16 +16,20 @@ jobs:
           SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
-          # REST root (OpenAPI doc) needs no table grants for anon, and the
-          # request still counts as Data API activity.
+          # Liveness: auth health answers 200 to the anon key when the
+          # project is awake, and fails hard (DNS) when paused.
           code=$(curl -s -o /tmp/body -w "%{http_code}" \
-            "$SUPABASE_URL/rest/v1/" \
-            -H "apikey: $SUPABASE_ANON_KEY" \
-            -H "Authorization: Bearer $SUPABASE_ANON_KEY")
-          echo "HTTP $code"
-          # Anything but 200 means the project is paused or broken:
-          # fail the run so it's visible.
+            "$SUPABASE_URL/auth/v1/health" \
+            -H "apikey: $SUPABASE_ANON_KEY")
+          echo "auth health: HTTP $code"
           if [ "$code" != "200" ]; then
             cat /tmp/body
             exit 1
           fi
+          # Activity: touch the Data API so Postgres sees traffic. anon has
+          # no grant on chats, so 401/42501 is expected — the denial itself
+          # is issued by Postgres, which is what counts.
+          curl -s -o /dev/null -w "rest ping: HTTP %{http_code}\n" \
+            "$SUPABASE_URL/rest/v1/chats?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY"
